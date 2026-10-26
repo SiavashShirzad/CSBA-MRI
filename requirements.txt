@@ -1,0 +1,13 @@
+python==3.13
+torch==2.12.1
+numpy==2.5.0
+pandas==2.3.3
+scipy==1.18.0
+statsmodels==0.14.6
+scikit-learn==1.8.0
+SimpleITK==2.5.5
+nibabel==5.4.2
+pydicom==3.0.2
+matplotlib==3.11.0
+neuroCombat==0.2.12
+openpyxl

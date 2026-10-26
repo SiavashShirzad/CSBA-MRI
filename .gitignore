@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+# model weights and data are not distributed in this repository
+*.pt
+*.pth
+*.ckpt
+*.npz
+*.npy
+*.nii
+*.nii.gz
+*.dcm
+*.csv
+*.xlsx
+*.pkl
+data/
+work/
