@@ -168,6 +168,34 @@ SUP = {'S1': OLD['S1'],
                f"Spearman correlations of the age gap with MSCC, cord area and T2 hyperintensity were {OV['spearman']['MSCC_diameter_AP']:.2f}, {OV['spearman']['area']:.2f} and {OV['spearman']['t2hi']:.2f}."),
        'S11': OLD['S9'], 'S12': OLD['S13'], 'S13': OLD['S4'], 'S14': OLD['S10'], 'S15': OLD['S12'], 'S16': OLD['S11'], 'S17': OLD['S5']}
 
+# deployment analyses (c29_deployment.py)
+def p_txt(p): return 'P < 0.001' if p < .001 else f'P = {P_(p)}'
+
+
+PS = g('processing_success.csv')
+SUP['S18'] = ('Automated processing success by data source', pd.DataFrame({
+    'Data source': PS.dataset.replace({'JHU_DCM': 'JHU DCM', 'JHU_clinical': 'JHU clinical', 'SpineGeneric': 'Spine Generic'}),
+    'Images processed': [f'{a:,} of {b:,} ({c:.1f}%)' for a, b, c in zip(PS.images_ok, PS.images, PS.images_pct)],
+    'Participants with ≥1 processed image': [f'{a:,} of {b:,} ({c:.1f}%)' for a, b, c in zip(PS.participants_ok, PS.participants, PS.participants_pct)]}),
+    'Images that entered automated processing (segmentation, straightening and level normalization). Failures were missing segmentation, no fitted cord centerline, processing errors or incomplete C2–T1 coverage; reasons are given in Supplementary Table 1. Images include repeat examinations.')
+AU = g('discrimination.csv')
+SUP['S19'] = ('Discrimination of patient groups from same-center controls by the whole-spine age gap', pd.DataFrame({
+    'Comparison': AU.contrast, 'Controls': AU.n_ctrl, 'Patients': AU.n_case,
+    'AUC, unadjusted (95% CI)': [ci(a, b, c, 2) for a, b, c in zip(AU.auc, AU.lo, AU.hi)],
+    'AUC, age-adjusted (95% CI)': [ci(a, b, c, 2) for a, b, c in zip(AU.auc_age_adj, AU.adj_lo, AU.adj_hi)]}),
+    'Area under the receiver operating characteristic curve (AUC). Age-adjusted AUC uses the gap minus the value expected for the person’s age (and site for Spine Generic) from a regression in the controls. 95% CIs from participant bootstrap resamples (4,000 unadjusted; 1,000 age-adjusted, refitting the adjustment).')
+UF = g('uncertainty_flagging.csv'); UN = g('uncertainty.csv')
+u1 = UF[UF['set'].isin(['Internal test', 'External controls'])]
+u2 = UF[UF['set'].str.startswith('sigma, ')]
+SUP['S20'] = ('Predicted uncertainty of the whole-spine age estimate', pd.DataFrame({
+    'Analysis': [f'Error vs predicted SD, {s}' for s in UN.set] + [f'Scans in top 10% of predicted SD, {s}' for s in u1.set]
+                + [f'Predicted SD, {s.removeprefix("sigma, ")}' for s in u2.set],
+    'Participants': list(UN.n) + list(u1.n) + list(u2.n),
+    'Result': [f'Spearman ρ = {r:.2f} ({p_txt(p)}); 95% interval coverage {100*c:.0f}%'.replace('-', '−') for r, p, c in zip(UN.rho_sigma_abs_error, UN.p, UN.coverage95_scaled_sigma)]
+              + [f'MAE {a:.1f} vs {b:.1f} y in other scans' for a, b in zip(u1.mae_top10_sigma, u1.mae_rest)]
+              + [f'Difference {ci(b, l, h, 3)} y; {p_txt(p)}' for b, l, h, p in zip(u2.sigma_diff, u2.lo, u2.hi, u2.p)]}),
+    'Predicted SD is the mean voxel-wise standard deviation within the spine. Coverage is the share of participants whose absolute error was within 1.96 predicted SDs after one scale factor fitted on development participants. Patient–control differences in predicted SD are adjusted as in Supplementary Table 5. MAE, mean absolute error.')
+
 
 def rl(df):
     df = df.copy(); df.columns = [relabel(c) for c in df.columns]

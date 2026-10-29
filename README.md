@@ -37,7 +37,7 @@ Scripts are in `csba/` and run in numerical order.
 | Training | `c03_train.py --fold K [--variant main] [--gpu 0]` | Train DenseAgeNet (`model.py`) for one fold |
 | Inference | `c04_infer.py --fold K [--maps] [--model_dir DIR]` | Voxel-wise age maps and pooled region ages |
 | Calibration | `c05_calibrate.py TAG` | Quadratic calibration fitted on out-of-fold healthy predictions |
-| Analyses | `c06`–`c25`, `c28` | Accuracy, pre-specified contrasts, validation, level and within-person analyses, marrow, harmonization (ComBat), sensitivity analyses, proteomic enrichment |
+| Analyses | `c06`–`c25`, `c28`, `c29` | Accuracy, pre-specified contrasts, validation, level and within-person analyses, marrow, harmonization (ComBat), sensitivity analyses, proteomic enrichment, processing success, discrimination and uncertainty |
 | Figures and tables | `c11`, `c16`, `c18`, `c14`, `c17` | Manuscript figures and supplementary tables |
 
 `run_all.sh` reruns calibration and all downstream analyses for the primary model. `jobrunner.py` queues training and inference jobs across GPUs.
